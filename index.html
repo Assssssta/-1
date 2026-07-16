@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Приглашение на свадьбу | Анастасия & Максим</title>
+  <!-- Яндекс.Карты -->
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ваш-ключ" type="text/javascript"></script>
+  <!-- Шрифты и иконки -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Обнуление и базовые стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(145deg, #f9f3e8 0%, #e6f0fa 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #2d4059;
+      padding: 20px 15px 40px;
+      position: relative;
+    }
+    /* Фон с облаками (слой) */
+    .cloud-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 1000px;
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(2px);
+      animation: floatCloud 25s infinite alternate ease-in-out;
+    }
+    .cloud::after, .cloud::before {
+      content: '';
+      position: absolute;
+      background: inherit;
+      border-radius: 50%;
+    }
+    .cloud1 { width: 180px; height: 60px; top: 8%; left: -5%; animation-duration: 28s; }
+    .cloud1::before { width: 80px; height: 80px; top: -40px; left: 20px; }
+    .cloud1::after { width: 100px; height: 100px; top: -50px; left: 60px; }
+
+    .cloud2 { width: 240px; height: 70px; top: 20%; right: -3%; animation-duration: 32s; animation-delay: -6s; }
+    .cloud2::before { width: 100px; height: 100px; top: -60px; left: 30px; }
+    .cloud2::after { width: 120px; height: 120px; top: -70px; left: 90px; }
+
+    .cloud3 { width: 200px; height: 55px; bottom: 15%; left: 10%; animation-duration: 30s; animation-delay: -12s; }
+    .cloud3::before { width: 90px; height: 90px; top: -50px; left: 20px; }
+    .cloud3::after { width: 110px; height: 110px; top: -60px; left: 70px; }
+
+    .cloud4 { width: 280px; height: 80px; bottom: 30%; right: 5%; animation-duration: 35s; animation-delay: -18s; }
+    .cloud4::before { width: 130px; height: 130px; top: -80px; left: 40px; }
+    .cloud4::after { width: 150px; height: 150px; top: -90px; left: 110px; }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(0) scale(1); }
+      100% { transform: translateX(120px) scale(1.02); }
+    }
+
+    /* Контейнер контента поверх всего */
+    .content {
+      position: relative;
+      z-index: 10;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    /* 3D конверт */
+    .envelope-wrapper {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto 10px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .envelope-wrapper:hover {
+      transform: scale(1.02);
+    }
+    .envelope {
+      width: 100%;
+      aspect-ratio: 1 / 0.7;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      background: #f9d9e6;
+      border-radius: 20px 20px 8px 8px;
+      box-shadow: 0 30px 40px -20px rgba(0,0,0,0.4), 0 0 0 2px #ffe5f0 inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .envelope.open {
+      transform: rotateY(180deg);
+    }
+    .envelope-front, .envelope-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      background: radial-gradient(circle at 20% 30%, #ffe2f0, #fbc8d9);
+    }
+    .envelope-back {
+      transform: rotateY(180deg);
+      background: radial-gradient(circle at 80% 70%, #ffe2f0, #f5c0d0);
+      color: #3a2c3a;
+    }
+    .envelope-front i {
+      font-size: 4rem;
+      color: #d45a7a;
+      text-shadow: 0 4px 12px rgba(212, 90, 122, 0.3);
+      margin-bottom: 10px;
+    }
+    .envelope-front h3 {
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #a03a5a;
+      background: rgba(255,255,240,0.5);
+      padding: 6px 20px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      font-size: 1.1rem;
+    }
+    .envelope-back h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #632c44;
+      margin-bottom: 5px;
+    }
+    .envelope-back p {
+      font-weight: 400;
+      color: #452b3a;
+    }
+
+    /* Стеклянные карточки */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px 12px 48px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 20px 40px -12px rgba(0, 20, 30, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+      padding: 28px 22px;
+      width: 100%;
+      max-width: 700px;
+      transition: all 0.3s;
+      color: #1f2e3f;
+    }
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 28px 48px -16px rgba(0, 30, 40, 0.3);
+      transform: scale(1.01);
+    }
+
+    /* Заголовки и текст */
+    .title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f7b0c0, #f9d56e, #80cbc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(255,215,0,0.1);
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+    .subtitle {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #4a5b6b;
+      margin-top: 4px;
+    }
+    .info-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 12px 0;
+    }
+    .info-line i {
+      color: #e68a9e;
+      width: 28px;
+      font-size: 1.4rem;
+    }
+    .highlight {
+      background: rgba(249, 213, 110, 0.25);
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      border: 1px solid rgba(249, 213, 110, 0.3);
+    }
+
+    /* Большие фото */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      margin: 10px 0;
+    }
+    .photo-grid img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 28px 8px 28px 8px;
+      box-shadow: 0 12px 28px -8px rgba(0,0,0,0.2);
+      border: 2px solid rgba(255,255,240,0.5);
+      transition: 0.3s;
+    }
+    .photo-grid img:hover {
+      transform: scale(1.02);
+      border-color: #f9d56e;
+    }
+    .photo-grid img:first-child {
+      grid-row: span 2;
+      aspect-ratio: auto;
+    }
+
+    /* Музыка */
+    .music-player {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(255, 228, 240, 0.35);
+      backdrop-filter: blur(6px);
+      padding: 10px 22px;
+      border-radius: 60px;
+      border: 1px solid rgba(255, 200, 200, 0.3);
+      width: fit-content;
+      margin: 5px auto;
+    }
+    .music-player i {
+      font-size: 2rem;
+      color: #d45a7a;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .music-player i:hover {
+      transform: scale(1.15);
+      color: #b84362;
+    }
+
+    /* Яндекс карта */
+    #map {
+      width: 100%;
+      height: 260px;
+      border-radius: 28px 8px 28px 8px;
+      border: 2px solid rgba(255, 240, 200, 0.5);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      margin: 10px 0;
+    }
+
+    /* Частицы (canvas) */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Лепестки (живые) */
+    .petal {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at 30% 30%, #ffb7c5, #f48b9e);
+      border-radius: 50% 0 50% 50%;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 2;
+      animation: fall linear infinite;
+      box-shadow: 0 0 8px rgba(255, 150, 180, 0.3);
+    }
+    .petal:nth-child(odd) {
+      background: radial-gradient(circle at 30% 30%, #f9d56e, #f5b342);
+      width: 16px;
+      height: 16px;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-20vh) rotate(0deg) scale(0.8); opacity: 0.4; }
+      100% { transform: translateY(110vh) rotate(720deg) scale(1.2); opacity: 0.9; }
+    }
+
+    /* Адаптив */
+    @media (max-width: 640px) {
+      .title { font-size: 2.2rem; }
+      .glass-card { padding: 20px 16px; }
+      .photo-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .envelope-wrapper { max-width: 280px; }
+    }
+    @media (max-width: 480px) {
+      .photo-grid { grid-template-columns: 1fr; }
+      .photo-grid img:first-child { grid-row: auto; }
+    }
+
+    /* кнопка */
+    .btn-soft {
+      background: rgba(255, 215, 200, 0.3);
+      backdrop-filter: blur(4px);
+      padding: 10px 28px;
+      border-radius: 60px;
+      border: 1px solid rgba(255, 200, 200, 0.4);
+      font-weight: 600;
+      color: #2d4059;
+      transition: 0.3s;
+      display: inline-block;
+    }
+    .btn-soft:hover {
+      background: rgba(255, 200, 180, 0.5);
+      transform: scale(1.04);
+    }
+  </style>
+</head>
+<body>
+  <!-- Частицы -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Живые лепестки (JS генерирует) -->
+
+  <!-- Облака -->
+  <div class="cloud-layer">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="cloud cloud4"></div>
+  </div>
+
+  <!-- Контент -->
+  <div class="content">
+    <!-- 3D Конверт -->
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope" id="envelope">
+        <div class="envelope-front">
+          <i class="fas fa-heart"></i>
+          <h3>💌 Открой приглашение</h3>
+          <span style="font-size: 0.9rem; opacity: 0.7; margin-top: 6px;">(нажми на конверт)</span>
+        </div>
+        <div class="envelope-back">
+          <h2>Анастасия & Максим</h2>
+          <p style="font-weight: 500; margin-top: 6px;">Приглашаем вас на свадьбу!</p>
+          <p style="font-size: 0.9rem; background: rgba(255,255,240,0.3); padding: 6px 16px; border-radius: 40px; margin-top: 8px;">15 августа 2026 · 15:00</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Стеклянная карточка с информацией -->
+    <div class="glass-card" style="text-align: center;">
+      <h1 class="title">Анастасия & Максим</h1>
+      <div class="subtitle">💙 приглашают на свадьбу</div>
+      <div style="margin: 18px 0 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
+        <span class="highlight"><i class="far fa-calendar-alt"></i> 15 августа 2026</span>
+        <span class="highlight"><i class="far fa-clock"></i> 15:00</span>
+      </div>
+      <div class="info-line"><i class="fas fa-map-pin"></i> <span>ул. 3-й Пятилетки, 24, Рошаль, Шатура, Московская обл.</span></div>
+      <div style="margin: 10px 0 6px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <span style="background: rgba(128, 203, 196, 0.2); padding: 4px 16px; border-radius: 40px;">💚 зелёный</span>
+        <span style="background: rgba(249, 213, 110, 0.25); padding: 4px 16px; border-radius: 40px;">💛 жёлтый</span>
+        <span style="background: rgba(247, 176, 192, 0.25); padding: 4px 16px; border-radius: 40px;">💗 розовый</span>
+        <span style="background: rgba(100, 180, 255, 0.2); padding: 4px 16px; border-radius: 40px;">💙 голубой</span>
+      </div>
+    </div>
+
+    <!-- Большие фотографии -->
+    <div class="glass-card">
+      <div class="photo-grid">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80" alt="Фото пары 1">
+        <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600&q=80" alt="Фото пары 2">
+        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Фото пары 3">
+      </div>
+    </div>
+
+    <!-- Музыка -->
+    <div class="glass-card" style="display: flex; flex-direction: column; align-items: center;">
+      <div class="music-player">
+        <i class="fas fa-play-circle" id="playBtn"></i>
+        <i class="fas fa-stop-circle" id="stopBtn"></i>
+        <span style="font-weight: 400; font-size: 0.95rem;">🎵 Our Love</span>
+      </div>
+      <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+      </audio>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 8px;">нажмите play для фоновой музыки</p>
+    </div>
+
+    <!-- Яндекс карта -->
+    <div class="glass-card">
+      <div id="map"></div>
+      <div style="margin-top: 12px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="https://yandex.ru/maps/?text=Рошаль, улица 3-й Пятилетки, 24" target="_blank" class="btn-soft"><i class="fas fa-route"></i> Открыть в Яндекс.Картах</a>
+      </div>
+    </div>
+
+    <div style="font-size: 0.9rem; opacity: 0.5; text-align: center; padding: 16px 0;">💖 С нетерпением ждём вас!</div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 3D конверт ----------
+      const envelopeWrapper = document.getElementById('envelopeWrapper');
+      const envelope = document.getElementById('envelope');
+      envelopeWrapper.addEventListener('click', function(e) {
+        envelope.classList.toggle('open');
+      });
+
+      // ---------- Частицы (canvas) ----------
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      const particles = [];
+      const PARTICLE_COUNT = 70;
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 5 + 2,
+          speedX: (Math.random() - 0.5) * 0.4,
+          speedY: (Math.random() - 0.5) * 0.4,
+          color: `hsla(${Math.floor(Math.random() * 60 + 320)}, 80%, 70%, ${Math.random() * 0.5 + 0.2})`
+        });
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = 'rgba(255,200,200,0.3)';
+          ctx.shadowBlur = 12;
+          ctx.fill();
+          p.x += p.speedX;
+          p.y += p.speedY;
+          if (p.x < 0 || p.x > width) p.speedX *= -1;
+          if (p.y < 0 || p.y > height) p.speedY *= -1;
+        });
+        requestAnimationFrame(drawParticles);
+      }
+      drawParticles();
+
+      // ---------- Живые лепестки ----------
+      function createPetal() {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        const size = Math.random() * 16 + 12;
+        petal.style.width = size + 'px';
+        petal.style.height = size + 'px';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDuration = (Math.random() * 8 + 8) + 's';
+        petal.style.animationDelay = (Math.random() * 6) + 's';
+        petal.style.opacity = Math.random() * 0.5 + 0.3;
+        document.body.appendChild(petal);
+        setTimeout(() => petal.remove(), 16000);
+      }
+      setInterval(createPetal, 600);
+      for (let i = 0; i < 6; i++) setTimeout(createPetal, i * 300);
+
+      // ---------- Музыка ----------
+      const audio = document.getElementById('bgMusic');
+      const playBtn = document.getElementById('playBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      playBtn.addEventListener('click', () => {
+        audio.play().catch(() => {});
+        playBtn.style.color = '#b84362';
+      });
+      stopBtn.addEventListener('click', () => {
+        audio.pause();
+        audio.currentTime = 0;
+        playBtn.style.color = '#d45a7a';
+      });
+
+      // ---------- Яндекс карта ----------
+      function initMap() {
+        try {
+          const map = new ymaps.Map("map", {
+            center: [55.660, 39.870],
+            zoom: 15,
+            controls: ['zoomControl', 'fullscreenControl']
+          });
+          const placemark = new ymaps.Placemark([55.660, 39.870], {
+            balloonContent: 'ул. 3-й Пятилетки, 24, Рошаль'
+          }, {
+            preset: 'islands#redCircleIcon',
+            iconColor: '#f48b9e'
+          });
+          map.geoObjects.add(placemark);
+        } catch(e) {
+          document.getElementById('map').innerHTML = '<p style="padding:20px;text-align:center;">Загрузка карты... <br><small>проверьте подключение к интернету</small></p>';
+        }
+      }
+      if (typeof ymaps !== 'undefined' && ymaps.load) {
+        ymaps.load(initMap);
+      } else {
+        document.getElementById('map').innerHTML = '<p style="padding:20px;text-align:center;">Карта временно недоступна</p>';
+      }
+
+    })();
+  </script>
+
+  <!-- Замена имён и данных выполнена: Екатерина -> Анастасия, Даниил -> Максим, время 15:00, дата 15 августа, адрес указан -->
+</body>
+</html>
